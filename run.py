@@ -1,11 +1,10 @@
+# coding=utf-8
 import games
+import heuristics
 
-#game = games.TicTacToe(h=3,v=3,k=3)
+# game = games.TicTacToe(h=3,v=3,k=3)
 game = games.ConnectFour()
-
 state = game.initial
-
-
 player = 'X'
 
 while True:
@@ -26,14 +25,24 @@ while True:
         player = 'X'
     else:
         print "Thinking..."
-        #move = games.minimax_decision(state, game)
-        #move = games.alphabeta_full_search(state, game)
-        move = games.alphabeta_search(state, game)
+        # move = games.minimax_decision(state, game)
+        # move = games.alphabeta_full_search(state, game)
+        move = games.alphabeta_search(state, game, eval_fn=heuristics.random_heuristic)
 
         state = game.make_move(move, state)
         player = 'O'
     print "-------------------"
     if game.terminal_test(state):
         game.display(state)
-        print "Final de la partida"
-        break
+        print "\n\nFinal de la partida"
+        decision = raw_input("¿Desea reiniciarla? (S/N) ")
+
+        while str.lower(decision) != "n" and str.lower(decision) != "s":
+            decision = raw_input()
+        else:
+            if str.lower(decision) == "s":
+                game = games.ConnectFour()
+                state = game.initial
+                player = 'X'
+            else:
+                break
