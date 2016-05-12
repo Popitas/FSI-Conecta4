@@ -23,8 +23,6 @@ def restart(decision):
             state = game.initial
             level = start_rules.ask_difficulty()
             player = start_rules.ask_who_starts()
-        else:
-            break
 
 
 while True:
@@ -47,7 +45,7 @@ while True:
         print "Thinking..."
         # move = games.minimax_decision(state, game)
         # move = games.alphabeta_full_search(state, game)
-        move = games.alphabeta_search(state, game, d=level, eval_fn=heuristics.get_move)
+        move = games.alphabeta_search(state, game, d=level, eval_fn=heuristics.get_move_value)
 
         state = game.make_move(move, state)
         player = 'O'
@@ -56,5 +54,4 @@ while True:
         game.display(state)
         print "\n\nFinal de la partida"
         decision = raw_input("¿Desea reiniciarla? (S/N)")
-
         restart(decision.lower())
