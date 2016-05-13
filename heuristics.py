@@ -1,59 +1,71 @@
-def get_move_value(state, game):
-    if state.utility == -1:
-        return state.utility * 1000000 + contarfichas(state, game)
-    elif state.utility == 1:
-        return state.utility * 1000000 - contarfichas(state, game)
+# coding=utf-8
+from random import randint
+
+
+def get_random_board_value(state):
+    return randint(-100, 100)
+
+
+def get_column_value(column):
+    """Devuelve el valor asignado a una columna. Se da más importancia
+    a las columnas centrales."""
+    if column == 4:
+        return 3
+    elif column == (3 or 5):
+        return 2
     else:
-        valor = 0
-        for x in range(1, game.h + 1):
-            for y in range(1, game.v + 1):
-                if state.board.get((x, y)) == "X":
-                    valor += compute_utility(state.board, (x, y), "X")
-                elif state.board.get((x, y)) == "0":
-                    valor -= compute_utility(state.board, (x, y), "O")
-
-    return valor
+        return 1
 
 
-def compute_utility(board, move, player):
-    return k_in_row(board, move, player, (0, 1)) + \
-           k_in_row(board, move, player, (1, 0)) + \
-           k_in_row(board, move, player, (1, -1)) + \
-           k_in_row(board, move, player, (1, 1))
-
-
-def k_in_row(board, move, player, (delta_x, delta_y)):
+def get_discs_in_line_value(board, move, player, (delta_x, delta_y)):
+    """Asigna un valor a un movimiento que une fichas dándole más valor
+    si se realiza en las columnas centrales."""
     x, y = move
-    n = 0
-    acumulado = 0
+    discs_in_row = 0
+    line_value = 0
     while board.get((x, y)) == player:
-        n += 1
-        acumulado += sumacolumna(x)
+        discs_in_row += 1
+        line_value += get_column_value(x)
         x, y = x + delta_x, y + delta_y
 
     x, y = move
     while board.get((x, y)) == player:
-        n += 1
-        acumulado += sumacolumna(x)
+        discs_in_row += 1
+        line_value += get_column_value(x)
         x, y = x - delta_x, y - delta_y
 
-    n -= 1  # Because we counted move itself twice
-    return n * acumulado
+    discs_in_row -= 1
+    return discs_in_row * line_value
 
 
-def sumacolumna(columna):
-    if columna == 4:
-        return 300
-    elif columna == 3 or columna == 5:
-        return 200
+def get_move_value(board, move, player):
+    """Devuelve el valor de un movimiento."""
+    return get_discs_in_line_value(board, move, player, (0, 1)) + \
+           get_discs_in_line_value(board, move, player, (1, 0)) + \
+           get_discs_in_line_value(board, move, player, (1, -1)) + \
+           get_discs_in_line_value(board, move, player, (1, 1))
+
+
+def evaluate_moves(game, state):
+    """Evalúa si un movimiento beneficia al jugador X (máquina)."""
+    move_evaluation = 0
+
+    for x in range(1, game.h):
+        for y in range(1, game.v):
+            if state.board.get(x, y) == 'X':
+                move_evaluation += get_move_value(state.board, (x, y), 'X')
+            if state.board.get(x, y) == 'O':
+                move_evaluation -= get_move_value(state.board, (x, y), 'O')
+
+    return move_evaluation
+
+
+def get_board_value(state, game):
+    """Devuelve el valor de una configuración del tablero. Se da más relevancia
+    a los movimientos ganadores."""
+    if state.utility == -1:
+        return state.utility * 1000
+    elif state.utility == 1:
+        return state.utility * 2000
     else:
-        return 100
-
-
-def contarfichas(state, game):
-    contador = 0
-    for x in range(1, game.h + 1):
-        for y in range(1, game.v + 1):
-            if state.board.get((x, y)) == "X":
-                contador += 1
-    return contador
+        return evaluate_moves(game, state)
