@@ -81,7 +81,7 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
 
     def max_value(state, alpha, beta, depth):
         if cutoff_test(state, depth):
-            return eval_fn(state)
+            return eval_fn(state, game)
         v = -infinity
         for (a, s) in game.successors(state):
             v = max(v, min_value(s, alpha, beta, depth + 1))
@@ -92,7 +92,7 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
 
     def min_value(state, alpha, beta, depth):
         if cutoff_test(state, depth):
-            return eval_fn(state)
+            return eval_fn(state, game)
         v = infinity
         for (a, s) in game.successors(state):
             v = min(v, max_value(s, alpha, beta, depth + 1))
@@ -201,11 +201,11 @@ class TicTacToe(Game):
     the form of a list of (x, y) positions, and a board, in the form of
     a dict of {(x, y): Player} entries, where Player is 'X' or 'O'."""
 
-    def __init__(self, h=3, v=3, k=3):
+    def __init__(self, h=3, v=3, k=3, player='X'):
         update(self, h=h, v=v, k=k)
         moves = [(x, y) for x in range(1, h + 1)
                  for y in range(1, v + 1)]
-        self.initial = Struct(to_move='X', utility=0, board={}, moves=moves)
+        self.initial = Struct(to_move=player, utility=0, board={}, moves=moves)
 
     def legal_moves(self, state):
         "Legal moves are any square not yet taken."
@@ -274,8 +274,8 @@ class ConnectFour(TicTacToe):
     row, or in a square directly above an occupied square.  Traditionally
     played on a 7x6 board and requiring 4 in a row."""
 
-    def __init__(self, h=7, v=6, k=4):
-        TicTacToe.__init__(self, h, v, k)
+    def __init__(self, h=7, v=6, k=4, player='X'):
+        TicTacToe.__init__(self, h, v, k, player)
 
     def legal_moves(self, state):
         "Legal moves are any square not yet taken."

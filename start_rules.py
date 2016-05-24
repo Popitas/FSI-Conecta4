@@ -1,9 +1,8 @@
 # coding=utf-8
-
 def ask_difficulty():
     level = 0
-    while level not in [1, 2, 3]:
-        level = input("Seleccione el nivel de dificultad (1-3): ")
+    while level not in range(1, 6):
+        level = input("Seleccione el nivel de dificultad (1-5): ")
 
     return level
 
@@ -16,4 +15,3 @@ def ask_who_starts():
                 return 'X'
             else:
                 return 'O'
-            break
