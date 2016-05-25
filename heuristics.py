@@ -10,7 +10,7 @@ def get_column_value(column):
     """Devuelve el valor asignado a una columna. Se da más importancia
     a las columnas centrales."""
     if column == 4:
-        return 10
+        return 20
     elif column == (3 or 5):
         return 5
     else:
@@ -22,20 +22,20 @@ def get_discs_in_line_value(board, move, player, (delta_x, delta_y)):
     si se realiza en las columnas centrales."""
     x, y = move
     discs_in_row = 0
-    line_value = 0
+    column_value = 0
     while board.get((x, y)) == player:
         discs_in_row += 1
-        line_value += get_column_value(x)
+        column_value += get_column_value(x)
         x, y = x + delta_x, y + delta_y
 
     x, y = move
     while board.get((x, y)) == player:
         discs_in_row += 1
-        line_value += get_column_value(x)
+        column_value += get_column_value(x)
         x, y = x - delta_x, y - delta_y
 
     discs_in_row -= 1
-    return discs_in_row * line_value
+    return discs_in_row * column_value
 
 
 def get_move_value(board, move, player):
@@ -69,4 +69,4 @@ def get_board_value(state, game):
         return state.utility * 100
     else:
         board = state.board.copy()
-        return evaluate_moves(game, board)/len(board)
+        return evaluate_moves(game, board) / len(board)
