@@ -2,6 +2,18 @@
 from random import randint
 
 
+def memoize(f):
+    memo = {}
+
+    def helper(state, game):
+        current_state = frozenset(state.board.items())
+        if current_state not in memo:
+            memo[current_state] = f(state, game)
+        return memo[current_state]
+
+    return helper
+
+
 def get_random_board_value(state):
     return randint(-100, 100)
 
@@ -60,6 +72,7 @@ def evaluate_moves(game, board):
     return move_evaluation
 
 
+@memoize
 def get_board_value(state, game):
     """Devuelve el valor de una configuración del tablero. Se da más relevancia
     a los movimientos que terminan la partida."""
